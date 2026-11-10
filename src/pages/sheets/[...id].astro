@@ -1,0 +1,29 @@
+---
+import { render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import { allSheets, CATEGORIES, url } from '../../lib';
+
+export async function getStaticPaths() {
+  const sheets = await allSheets();
+  return sheets.map((s) => ({ params: { id: s.id }, props: { sheet: s, all: sheets } }));
+}
+const { sheet, all } = Astro.props;
+const { Content } = await render(sheet);
+const d = sheet.data;
+const related = d.related.map((id) => all.find((s) => s.id === id)).filter(Boolean);
+---
+<Base title={d.title} description={d.summary} pagefind>
+  <article class="sheet">
+    <div class="crumb"><a href={url('/')}>home</a> / {CATEGORIES[d.category]?.label ?? d.category}</div>
+    <h1>{d.title}</h1>
+    <p class="lede">{d.summary}</p>
+    <div>{d.tags.map((t) => <span class="pill">{t}</span>)}<span class="pill">{d.difficulty}</span></div>
+    <Content />
+    {related.length > 0 && (
+      <>
+        <h2>Related</h2>
+        <div class="related">{related.map((r) => <a href={url(`/sheets/${r!.id}/`)}>{r!.data.title}</a>)}</div>
+      </>
+    )}
+  </article>
+</Base>

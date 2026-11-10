@@ -1,0 +1,50 @@
+---
+title: Rate Limiting
+category: system-design
+summary: Protect services from overload and abuse with token buckets, windows, and quotas.
+tags: [api, reliability, throttling]
+difficulty: intermediate
+updated: 2026-11-10
+related: [system-design/caching, system-design/load-balancing]
+---
+import TokenBucket from '../../../components/TokenBucket.tsx';
+
+## TL;DR
+Cap how many requests a client can make in a time window. Reject extras with **HTTP 429** and a `Retry-After` header.
+
+## Algorithms
+| Algorithm | Allows bursts | Memory | Notes |
+|---|---|---|---|
+| Token bucket | Yes (up to capacity) | O(1) per key | Most common default |
+| Leaky bucket | No (smooths output) | O(1) | Good for steady downstream rate |
+| Fixed window | Edge spikes (2x) | O(1) | Simple but leaky at boundaries |
+| Sliding window log | No | O(n) | Exact, expensive |
+| Sliding window counter | Approx. | O(1) | Good accuracy/cost balance |
+
+<TokenBucket client:visible capacity={5} refillPerSec={1} />
+
+## Where to enforce
+- **API gateway / edge**: cheapest, protects everything behind it.
+- **Per service**: needed for fairness between internal callers.
+- **Shared state** (Redis `INCR` + `EXPIRE`, or a Lua script) when you run many instances.
+
+```python
+# Token bucket, single process
+import time
+
+class Bucket:
+    def __init__(self, capacity, rate):
+        self.cap, self.rate = capacity, rate
+        self.tokens, self.ts = capacity, time.monotonic()
+
+    def allow(self):
+        now = time.monotonic()
+        self.tokens = min(self.cap, self.tokens + (now - self.ts) * self.rate)
+        self.ts = now
+        if self.tokens >= 1:
+            self.tokens -= 1
+            return True
+        return False
+```
+
+<div class="callout"><strong>Gotcha:</strong> key by user or API key, not just IP. Many users share one NAT address.</div>

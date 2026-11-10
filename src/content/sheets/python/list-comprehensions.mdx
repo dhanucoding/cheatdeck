@@ -1,0 +1,21 @@
+---
+title: Comprehensions & Generators
+category: python
+summary: Build lists, dicts, and sets in one line, and stream large data lazily.
+tags: [idioms, iterators]
+difficulty: beginner
+updated: 2026-11-10
+---
+
+## Quick forms
+```python
+squares = [x * x for x in range(10) if x % 2 == 0]
+lookup  = {u.id: u for u in users}
+unique  = {w.lower() for w in words}
+lazy    = (line.strip() for line in open("big.txt"))   # generator
+```
+
+## Rules of thumb
+- Use a **generator expression** when you only iterate once.
+- Break into a loop once it needs more than one `if` or nested `for`.
+- `sum(x for x in xs)` needs no extra brackets.

@@ -1,0 +1,30 @@
+---
+title: Load Balancing
+category: system-design
+summary: Spread traffic across servers. L4 vs L7, algorithms, and health checks.
+tags: [scaling, networking, availability]
+difficulty: beginner
+updated: 2026-11-10
+related: [system-design/caching, system-design/rate-limiting]
+---
+
+## TL;DR
+A load balancer fronts a pool of servers, routes each request to a healthy one, and removes failed ones.
+
+## L4 vs L7
+| | L4 (transport) | L7 (application) |
+|---|---|---|
+| Sees | IP + port | HTTP headers, paths, cookies |
+| Speed | Faster | Slower, more flexible |
+| Can do | TCP/UDP balancing | Path routing, TLS termination, auth |
+
+## Algorithms
+- **Round robin**: simple, ignores load.
+- **Least connections**: good for uneven request cost.
+- **IP / consistent hash**: sticky routing without sessions.
+- **Weighted**: mixed server sizes.
+
+## Checklist
+1. Health checks (active and passive).
+2. Keep servers stateless, or use sticky sessions as a last resort.
+3. Run the balancer redundantly, or it becomes the single point of failure.

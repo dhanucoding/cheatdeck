@@ -1,0 +1,42 @@
+---
+import '../styles/global.css';
+import Palette from '../components/Palette.tsx';
+import { allSheets, url } from '../lib';
+const { title, description = 'Fast, keyboard-first cheat sheets for developers.', pagefind = false } = Astro.props;
+const sheets = (await allSheets()).map((s) => ({ id: s.id, title: s.data.title, category: s.data.category, tags: s.data.tags, href: url(`/sheets/${s.id}/`) }));
+const full = title === 'CheatDeck' ? title : `${title} · CheatDeck`;
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{full}</title>
+    <meta name="description" content={description} />
+    <meta property="og:title" content={full} />
+    <meta property="og:description" content={description} />
+    <link rel="icon" type="image/svg+xml" href={url('/favicon.svg')} />
+    <script is:inline>
+      try { var t = localStorage.getItem('theme'); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
+    </script>
+  </head>
+  <body>
+    <header class="top">
+      <div class="wrap">
+        <a class="brand" href={url('/')}>Cheat<b>Deck</b></a>
+        <Palette client:load sheets={sheets} />
+        <button class="ghost" id="theme" aria-label="Toggle theme">◐</button>
+      </div>
+    </header>
+    <main class="wrap" data-pagefind-body={pagefind ? '' : undefined}><slot /></main>
+    <footer><div class="wrap">Built with Astro · hosted on GitHub Pages · <a href="https://github.com/DhanuCoding/cheatdeck">source</a></div></footer>
+    <script is:inline>
+      document.getElementById('theme').addEventListener('click', function () {
+        var el = document.documentElement;
+        var dark = el.dataset.theme ? el.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+        el.dataset.theme = dark ? 'light' : 'dark';
+        try { localStorage.setItem('theme', el.dataset.theme); } catch (e) {}
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,36 @@
+---
+title: Caching
+category: system-design
+summary: Trade memory for latency. Pick a write strategy, an eviction policy, and an invalidation story.
+tags: [performance, redis, cdn]
+difficulty: beginner
+updated: 2026-11-10
+related: [system-design/rate-limiting, system-design/load-balancing]
+---
+
+## TL;DR
+Cache what is **read often, changes rarely, and is expensive to compute**. Every cache needs an invalidation plan.
+
+## Strategies
+| Strategy | Read path | Write path | Use when |
+|---|---|---|---|
+| Cache-aside | App checks cache, falls back to DB | App writes DB, deletes key | Default choice |
+| Read-through | Cache loads from DB itself | Same as cache-aside | You want a simpler app |
+| Write-through | Always cached | Write cache + DB together | Read-heavy, consistency matters |
+| Write-back | Always cached | Write cache, flush later | Write-heavy, can risk data loss |
+
+## Eviction
+- **LRU**: drop least recently used. Best general default.
+- **LFU**: drop least frequently used. Good for stable hot sets.
+- **TTL**: expire after a fixed time. Pair with any of the above.
+
+## Numbers to remember
+| Operation | Rough latency |
+|---|---|
+| L1 cache reference | 1 ns |
+| Main memory | 100 ns |
+| Redis round trip (same DC) | 0.5 ms |
+| SSD read | 0.1 ms |
+| Cross-region RTT | 50-150 ms |
+
+<div class="callout"><strong>Gotcha:</strong> cache stampede. When a hot key expires, many requests hit the DB at once. Add jitter to TTLs or use request coalescing.</div>

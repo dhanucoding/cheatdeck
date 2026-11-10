@@ -1,0 +1,26 @@
+---
+import Base from '../layouts/Base.astro';
+import { allSheets, CATEGORIES, url } from '../lib';
+const sheets = await allSheets();
+const groups = Object.keys(CATEGORIES).map((k) => ({ key: k, ...CATEGORIES[k], items: sheets.filter((s) => s.data.category === k) })).filter((g) => g.items.length);
+---
+<Base title="CheatDeck">
+  <section class="hero">
+    <h1>Cheat sheets you can<br />actually skim.</h1>
+    <p>Short, opinionated cards for system design and beyond. Press <kbd>⌘K</kbd> to jump anywhere.</p>
+  </section>
+  {groups.map((g) => (
+    <>
+      <h2 class="section">{g.icon} {g.label}<small>{g.blurb}</small></h2>
+      <div class="grid">
+        {g.items.map((s) => (
+          <a class="card" href={url(`/sheets/${s.id}/`)}>
+            <h3>{s.data.title}</h3>
+            <p>{s.data.summary}</p>
+            <span class="pill">{s.data.difficulty}</span>
+          </a>
+        ))}
+      </div>
+    </>
+  ))}
+</Base>
