@@ -9,6 +9,8 @@ difficulty: intermediate
 updated: 2026-11-10
 related: [system-design/consistent-hashing, system-design/databases, system-design/cap-theorem]
 ---
+import ReplicationDiagram from "../../../components/ReplicationDiagram.astro";
+import ShardingDiagram from "../../../components/ShardingDiagram.astro";
 
 ## TL;DR
 **Replication** = same data on many nodes. **Sharding** = different data on different nodes. Large systems use both.
@@ -22,7 +24,13 @@ related: [system-design/consistent-hashing, system-design/databases, system-desi
 
 Sync replication is safe but slow. Async is fast but can lose recent writes on failover.
 
+<ReplicationDiagram />
+
+
 ## Sharding strategies
+
+<ShardingDiagram />
+
 | Strategy | Good | Bad |
 |---|---|---|
 | Range (by key range) | Efficient range scans | Hot spots (e.g. latest timestamps) |

@@ -134,3 +134,20 @@ html { scroll-padding-top: 72px; }
   .nav-open .scrim { display: block; position: fixed; inset: 56px 0 0 0; background: rgba(0,0,0,.4); z-index: 30; }
   .row { grid-template-columns: 12px 1fr; } .row .sum { grid-column: 2; }
 }
+/* static diagrams */
+.diagram { margin: 20px 0; padding: 12px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); }
+.diagram svg { display: block; width: 100%; max-width: 640px; margin: 0 auto; height: auto; font-family: var(--sans); }
+.diagram figcaption { color: var(--muted); font-size: .85rem; text-align: center; margin-top: 6px; }
+.dg-node { fill: var(--bg); stroke: var(--line); stroke-width: 1.5; }
+.dg-hot { fill: var(--accent); }
+.dg-t { fill: var(--ink); font-size: 13px; font-weight: 600; }
+.dg-hot-t { fill: var(--accent-ink); font-size: 13px; font-weight: 700; }
+.dg-s { fill: var(--muted); font-size: 10.5px; }
+.dg-e { stroke: var(--muted); stroke-width: 1.5; fill: none; }
+.dg-ea { stroke: var(--accent); stroke-width: 1.8; fill: none; stroke-dasharray: 5 4; }
+.dg-ah { fill: var(--muted); }
+.dg-aha { fill: var(--accent); }
+.dg-badge { fill: var(--accent); }
+.dg-bt { fill: var(--accent-ink); font-size: 11px; font-weight: 700; }
+.diagram ol { margin: 10px auto 0; padding-left: 22px; max-width: 640px; font-size: .9rem; color: var(--muted); }
+.diagram ol b { color: var(--ink); }

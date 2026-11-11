@@ -10,9 +10,13 @@ difficulty: beginner
 updated: 2026-11-10
 related: [system-design/rate-limiting, system-design/load-balancing]
 ---
+import CacheAsideDiagram from "../../../components/CacheAsideDiagram.astro";
 
 ## TL;DR
 Cache what is **read often, changes rarely, and is expensive to compute**. Every cache needs an invalidation plan.
+
+<CacheAsideDiagram />
+
 
 ## Strategies
 | Strategy | Read path | Write path | Use when |
