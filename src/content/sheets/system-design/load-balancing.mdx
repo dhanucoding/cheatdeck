@@ -10,9 +10,12 @@ difficulty: beginner
 updated: 2026-11-10
 related: [system-design/caching, system-design/rate-limiting]
 ---
+import LoadBalancerDiagram from "../../../components/LoadBalancerDiagram.tsx";
 
 ## TL;DR
 A load balancer fronts a pool of servers, routes each request to a healthy one, and removes failed ones.
+
+<LoadBalancerDiagram client:visible />
 
 ## L4 vs L7
 | | L4 (transport) | L7 (application) |
