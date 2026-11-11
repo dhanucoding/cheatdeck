@@ -1,0 +1,31 @@
+---
+title: CAP & Consistency Models
+category: system-design
+summary: During a network partition you choose between consistency and availability.
+tags: [distributed, consistency, theory]
+difficulty: advanced
+updated: 2026-11-10
+related: [system-design/sharding-replication, system-design/databases]
+---
+
+## TL;DR
+Partitions happen, so the real choice is **C or A when the network splits**:
+- **CP**: refuse some requests to stay consistent (e.g. etcd, ZooKeeper, HBase).
+- **AP**: keep answering, maybe with stale data (e.g. Cassandra, DynamoDB defaults).
+
+## PACELC
+Even with no partition (**E**lse), you trade **L**atency against **C**onsistency. Replicating synchronously is slower but fresher.
+
+## Consistency models (strong to weak)
+| Model | Guarantee |
+|---|---|
+| Linearizable | Behaves like one copy, real-time order |
+| Sequential | Everyone sees the same order, not tied to real time |
+| Causal | Cause always seen before effect |
+| Read-your-writes | You see your own updates |
+| Eventual | Replicas converge if writes stop |
+
+## Interview shortcut
+Ask what is worse for this feature: **a wrong answer or no answer**? Payments and inventory lean CP. Feeds, likes, and carts lean AP.
+
+<div class="callout"><strong>Gotcha:</strong> "CA" is not a real option for a distributed system. You can't opt out of partitions.</div>

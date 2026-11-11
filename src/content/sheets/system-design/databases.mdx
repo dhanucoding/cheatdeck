@@ -1,0 +1,40 @@
+---
+title: SQL vs NoSQL
+category: system-design
+summary: Choose a storage model by access pattern, consistency need, and scale.
+tags: [database, storage, indexing]
+difficulty: beginner
+updated: 2026-11-10
+related: [system-design/sharding-replication, system-design/cap-theorem, system-design/caching]
+---
+
+## TL;DR
+Default to a relational database. Move to NoSQL when a specific access pattern or scale requirement demands it, not by fashion.
+
+## Pick by need
+| Need | Good fit |
+|---|---|
+| Joins, transactions, ad-hoc queries | PostgreSQL / MySQL |
+| Simple key lookups at huge scale | Key-value (DynamoDB, Redis) |
+| Flexible nested records | Document (MongoDB) |
+| Time-ordered, write-heavy | Wide-column (Cassandra), time-series |
+| Relationships are the query | Graph (Neo4j) |
+| Full-text search | Elasticsearch / OpenSearch |
+
+## Indexing basics
+- A B-tree index speeds reads and slows writes. Index columns you filter, join, or sort on.
+- A composite index `(a, b)` helps queries on `a` or `a + b`, not on `b` alone.
+- Check plans with `EXPLAIN`. A sequential scan on a big table is the usual culprit.
+
+```sql
+CREATE INDEX idx_orders_user_created ON orders (user_id, created_at DESC);
+EXPLAIN ANALYZE SELECT * FROM orders WHERE user_id = 42 ORDER BY created_at DESC LIMIT 20;
+```
+
+## ACID vs BASE
+| ACID | BASE |
+|---|---|
+| Atomic, Consistent, Isolated, Durable | Basically Available, Soft state, Eventually consistent |
+| Strong guarantees, harder to scale out | Scales out easily, the app handles conflicts |
+
+<div class="callout"><strong>Gotcha:</strong> "NoSQL scales, SQL doesn't" is false. Most apps never outgrow one well-indexed Postgres plus read replicas.</div>

@@ -1,0 +1,33 @@
+---
+title: Message Queues & Streams
+category: system-design
+summary: Decouple producers from consumers, absorb spikes, and process work asynchronously.
+tags: [kafka, async, messaging]
+difficulty: intermediate
+updated: 2026-11-10
+related: [system-design/rate-limiting, system-design/api-design]
+---
+
+## TL;DR
+Put a durable buffer between services so the sender doesn't wait for, or crash with, the receiver.
+
+## Queue vs log
+| | Queue (SQS, RabbitMQ) | Log/stream (Kafka, Kinesis) |
+|---|---|---|
+| Message after read | Removed | Kept, consumers track an offset |
+| Replay | No | Yes |
+| Ordering | Per queue (best effort) | Per partition |
+| Best for | Task distribution | Event streams, many consumers |
+
+## Delivery guarantees
+- **At-most-once**: may lose messages.
+- **At-least-once**: may duplicate. The usual default.
+- **Exactly-once**: really "at-least-once + idempotent consumers".
+
+## Must-haves
+1. **Idempotent consumers** (dedupe by message ID).
+2. **Dead-letter queue** for messages that keep failing.
+3. **Backpressure**: limit consumer prefetch, alert on lag.
+4. Keep ordering by **partition key** (e.g. `user_id`).
+
+<div class="callout"><strong>Gotcha:</strong> one slow message at the head of a partition blocks everything behind it. Use retries with a separate retry topic.</div>

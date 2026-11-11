@@ -1,0 +1,28 @@
+---
+title: Consistent Hashing
+category: system-design
+summary: Add or remove servers while moving only a small slice of the keys.
+tags: [sharding, caching, distributed]
+difficulty: intermediate
+updated: 2026-11-10
+related: [system-design/sharding-replication, system-design/caching, system-design/load-balancing]
+---
+import HashRing from '../../../components/HashRing.tsx';
+
+## TL;DR
+With `hash(key) % N`, changing N remaps almost every key. On a **hash ring**, adding or removing a node moves only about `1/N` of the keys.
+
+<HashRing client:visible />
+
+## How it works
+1. Hash nodes and keys onto the same circular space.
+2. A key belongs to the **first node clockwise** from its position.
+3. Add a node: it takes keys from its clockwise neighbor only. Remove one: its keys go to that neighbor.
+
+## Virtual nodes
+Few nodes give uneven slices. Give each server many points on the ring (50-200 is typical). Load evens out, and a failed server's keys spread across many peers instead of crushing one.
+
+## Where you see it
+Dynamo-style stores (Cassandra, DynamoDB), memcached client libraries, CDNs, and sticky load balancing.
+
+<div class="callout"><strong>Alternative:</strong> rendezvous (highest-random-weight) hashing is simpler and has no ring to maintain, at O(N) cost per lookup.</div>

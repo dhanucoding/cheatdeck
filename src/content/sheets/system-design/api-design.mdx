@@ -1,0 +1,33 @@
+---
+title: "API Design: REST, gRPC, GraphQL"
+category: system-design
+summary: Pick a style by client needs, then get versioning, pagination, and errors right.
+tags: [api, rest, grpc, graphql]
+difficulty: beginner
+updated: 2026-11-10
+related: [system-design/rate-limiting, system-design/message-queues]
+---
+
+## Style picker
+| | REST | gRPC | GraphQL |
+|---|---|---|---|
+| Transport | HTTP/JSON | HTTP/2 + Protobuf | HTTP, one endpoint |
+| Best for | Public APIs, CRUD | Internal service calls | Many clients, varied data needs |
+| Strength | Simple, cacheable | Fast, typed, streaming | Client picks fields |
+| Watch out | Over/under-fetching | Poor browser support | Caching, N+1 queries |
+
+## REST essentials
+- Nouns in URLs, verbs in methods: `GET /orders/42`, `POST /orders`.
+- `PUT` and `DELETE` are idempotent. For safe retries of `POST`, accept an **Idempotency-Key** header.
+- Use proper codes: `201` created, `400` bad input, `401/403` auth, `404`, `409` conflict, `429` throttled.
+
+## Pagination
+| Type | Use when |
+|---|---|
+| Offset (`?page=3`) | Small, stable data |
+| **Cursor** (`?after=abc`) | Large or changing data (preferred) |
+
+## Habits that age well
+1. Version from day one (`/v1/` or a header).
+2. Consistent error shape: `{ "code", "message", "details" }`.
+3. Never break existing fields. Add new ones.
