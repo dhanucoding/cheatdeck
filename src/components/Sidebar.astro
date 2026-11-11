@@ -1,0 +1,25 @@
+---
+import { catalog, url } from '../lib';
+const { current } = Astro.props;
+const cats = await catalog();
+const currentCat = cats.find((c) => c.flat.some((s) => s.id === current))?.key;
+---
+<aside class="sidebar" id="sidebar" aria-label="Browse sheets">
+  <a class:list={['side-home', { on: !current }]} href={url('/')}>All sheets</a>
+  {cats.map((c) => (
+    <details class="side-cat" open={!currentCat || c.key === currentCat}>
+      <summary><span>{c.icon} {c.label}</span><small>{c.flat.length}</small></summary>
+      {c.topics.map((t) => (
+        <div class="side-topic">
+          <h4>{t.name}</h4>
+          <ul>
+            {t.items.map((s) => (
+              <li><a href={url(`/sheets/${s.id}/`)} aria-current={s.id === current ? 'page' : undefined}>{s.data.title}</a></li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </details>
+  ))}
+</aside>
+<div class="scrim" id="scrim"></div>

@@ -7,6 +7,9 @@ const sheets = defineCollection({
   schema: z.object({
     title: z.string(),
     category: z.string(),
+    topic: z.string(),
+    order: z.number().default(100),
+    featured: z.boolean().default(false),
     summary: z.string(),
     tags: z.array(z.string()).default([]),
     difficulty: z.enum(['beginner', 'intermediate', 'advanced']).default('intermediate'),

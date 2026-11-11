@@ -1,8 +1,9 @@
 ---
 import '../styles/global.css';
 import Palette from '../components/Palette.tsx';
+import Sidebar from '../components/Sidebar.astro';
 import { allSheets, url } from '../lib';
-const { title, description = 'Fast, keyboard-first cheat sheets for developers.', pagefind = false } = Astro.props;
+const { title, description = 'Fast, keyboard-first cheat sheets for developers.', pagefind = false, current } = Astro.props;
 const sheets = (await allSheets()).map((s) => ({ id: s.id, title: s.data.title, category: s.data.category, tags: s.data.tags, href: url(`/sheets/${s.id}/`) }));
 const full = title === 'CheatDeck' ? title : `${title} · CheatDeck`;
 ---
@@ -23,12 +24,16 @@ const full = title === 'CheatDeck' ? title : `${title} · CheatDeck`;
   <body>
     <header class="top">
       <div class="wrap">
+        <button class="ghost browse" id="browse" aria-label="Browse sheets" aria-controls="sidebar">☰ Browse</button>
         <a class="brand" href={url('/')}>Cheat<b>Deck</b></a>
         <Palette client:load sheets={sheets} />
         <button class="ghost" id="theme" aria-label="Toggle theme">◐</button>
       </div>
     </header>
-    <main class="wrap" data-pagefind-body={pagefind ? '' : undefined}><slot /></main>
+    <div class="shell">
+      <Sidebar current={current} />
+      <main data-pagefind-body={pagefind ? '' : undefined}><slot /></main>
+    </div>
     <footer><div class="wrap">Built with Astro · hosted on GitHub Pages · <a href="https://github.com/DhanuCoding/cheatdeck">source</a></div></footer>
     <script is:inline>
       document.getElementById('theme').addEventListener('click', function () {
@@ -37,6 +42,17 @@ const full = title === 'CheatDeck' ? title : `${title} · CheatDeck`;
         el.dataset.theme = dark ? 'light' : 'dark';
         try { localStorage.setItem('theme', el.dataset.theme); } catch (e) {}
       });
+    </script>
+    <script is:inline>
+      (function () {
+        var b = document.body, close = function () { b.classList.remove('nav-open'); };
+        document.getElementById('browse').addEventListener('click', function () { b.classList.toggle('nav-open'); });
+        document.getElementById('scrim').addEventListener('click', close);
+        document.getElementById('sidebar').addEventListener('click', function (e) { if (e.target.closest('a')) close(); });
+        addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
+        var cur = document.querySelector('.sidebar a[aria-current]');
+        if (cur) cur.scrollIntoView({ block: 'nearest' });
+      })();
     </script>
   </body>
 </html>
