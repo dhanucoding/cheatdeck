@@ -1,8 +1,10 @@
 ---
 import Base from '../layouts/Base.astro';
+import YourStuff from '../components/YourStuff.tsx';
 import { catalog, allSheets, url } from '../lib';
 const cats = await catalog();
 const featured = (await allSheets()).filter((s) => s.data.featured);
+const lite = (await allSheets()).map((s) => ({ id: s.id, title: s.data.title, summary: s.data.summary, href: url(`/sheets/${s.id}/`), difficulty: s.data.difficulty }));
 const total = cats.reduce((n, c) => n + c.flat.length, 0);
 ---
 <Base title="CheatDeck">
@@ -10,6 +12,8 @@ const total = cats.reduce((n, c) => n + c.flat.length, 0);
     <h1>Cheat sheets you can<br />actually skim.</h1>
     <p>{total} short, opinionated cards. Browse on the left, or press <kbd>⌘K</kbd> to jump anywhere.</p>
   </section>
+
+  <YourStuff client:load sheets={lite} />
 
   <h2 class="section">Start here</h2>
   <div class="grid">

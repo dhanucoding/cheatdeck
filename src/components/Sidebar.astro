@@ -15,7 +15,7 @@ const currentTopic = cats.flatMap((c) => c.topics).find((t) => t.items.some((s) 
           <summary><span>{t.name}</span><small>{t.items.length}</small></summary>
           <ul>
             {t.items.map((s) => (
-              <li><a href={url(`/sheets/${s.id}/`)} aria-current={s.id === current ? 'page' : undefined}>{s.data.title}</a></li>
+              <li><a href={url(`/sheets/${s.id}/`)} data-id={s.id} aria-current={s.id === current ? 'page' : undefined}>{s.data.title}</a></li>
             ))}
           </ul>
         </details>
@@ -47,4 +47,17 @@ const currentTopic = cats.flatMap((c) => c.topics).find((t) => t.items.some((s) 
       nodes.forEach(function (n) { n.open = !!n.querySelector('a[aria-current]'); });
     });
   })();
+</script>
+<script>
+  import { getPins, getViewed, onChange } from '../store';
+  const apply = () => {
+    const pins = new Set(getPins());
+    const seen = new Set(getViewed());
+    document.querySelectorAll<HTMLElement>('#sidebar a[data-id]').forEach((a) => {
+      a.toggleAttribute('data-pinned', pins.has(a.dataset.id!));
+      a.toggleAttribute('data-viewed', seen.has(a.dataset.id!));
+    });
+  };
+  apply();
+  onChange(apply);
 </script>

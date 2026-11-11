@@ -1,6 +1,7 @@
 ---
 import { render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
+import PinButton from '../../components/PinButton.tsx';
 import { allSheets, catalog, CATEGORIES, url } from '../../lib';
 
 export async function getStaticPaths() {
@@ -19,11 +20,11 @@ const next = i >= 0 && i < flat.length - 1 ? flat[i + 1] : undefined;
 ---
 <Base title={d.title} description={d.summary} pagefind current={sheet.id}>
   <div class="sheet-layout">
-    <article class="sheet">
+    <article class="sheet" data-sheet-id={sheet.id}>
       <div class="crumb"><a href={url('/')}>home</a> / {CATEGORIES[d.category]?.label ?? d.category} / {d.topic}</div>
       <h1>{d.title}</h1>
       <p class="lede">{d.summary}</p>
-      <div>{d.tags.map((t) => <span class="pill">{t}</span>)}<span class="pill">{d.difficulty}</span></div>
+      <div class="meta">{d.tags.map((t) => <span class="pill">{t}</span>)}<span class="pill">{d.difficulty}</span><PinButton client:load id={sheet.id} /></div>
       {toc.length > 1 && (
         <details class="jump">
           <summary>Jump to</summary>
@@ -51,6 +52,11 @@ const next = i >= 0 && i < flat.length - 1 ? flat[i + 1] : undefined;
       </aside>
     )}
   </div>
+  <script>
+    import { markViewed } from '../../store';
+    const id = document.querySelector<HTMLElement>('article.sheet')?.dataset.sheetId;
+    if (id) setTimeout(() => markViewed(id), 4000);
+  </script>
   <script is:inline>
     (function () {
       var links = [].slice.call(document.querySelectorAll('.toc a'));
