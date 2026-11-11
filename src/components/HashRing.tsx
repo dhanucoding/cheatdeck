@@ -40,7 +40,7 @@ export default function HashRing() {
 
   return (
     <div class="demo">
-      <h4>Consistent hashing ring</h4>
+      <h3>Consistent hashing ring</h3>
       <small>Each key belongs to the next node clockwise. Dots are keys, rings are nodes.</small>
       <svg viewBox="0 0 200 200" style="width:100%;max-width:320px;display:block;margin:8px auto" role="img" aria-label="Hash ring with nodes and keys">
         <circle cx="100" cy="100" r="80" fill="none" stroke="var(--line)" stroke-width="2" />

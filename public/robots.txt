@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://dhanucoding.github.io/cheatdeck/sitemap-index.xml

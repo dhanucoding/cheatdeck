@@ -23,6 +23,8 @@ export default function Palette({ sheets, base }: { sheets: Item[]; base: string
   const [pins, setPins] = useState<string[]>([]);
   const [deep, setDeep] = useState<Hit[]>([]);
   const input = useRef<HTMLInputElement>(null);
+  const opener = useRef<HTMLButtonElement>(null);
+  const wasOpen = useRef(false);
 
   const local = useMemo<Hit[]>(() => {
     const needle = q.trim().toLowerCase();
@@ -81,8 +83,12 @@ export default function Palette({ sheets, base }: { sheets: Item[]; base: string
     return () => removeEventListener('keydown', onKey);
   }, []);
   useEffect(() => {
-    if (open) { setSel(0); setPins(getPins()); setTimeout(() => input.current?.focus(), 0); }
-    else setQ('');
+    if (open) { wasOpen.current = true; setSel(0); setPins(getPins()); setTimeout(() => input.current?.focus(), 0); }
+    else {
+      setQ('');
+      // give focus back to the trigger, but only after a real close (not on first page load)
+      if (wasOpen.current) { wasOpen.current = false; if (document.activeElement === document.body) opener.current?.focus(); }
+    }
   }, [open]);
   useEffect(() => setSel(0), [q]);
 
@@ -90,15 +96,16 @@ export default function Palette({ sheets, base }: { sheets: Item[]; base: string
     if (e.key === 'ArrowDown') { e.preventDefault(); setSel((s) => Math.min(s + 1, results.length - 1)); }
     if (e.key === 'ArrowUp') { e.preventDefault(); setSel((s) => Math.max(s - 1, 0)); }
     if (e.key === 'Enter' && results[sel]) location.href = results[sel].href;
+    if (e.key === 'Tab') e.preventDefault(); // keep focus in the dialog; arrows move the selection
   };
 
   return (
     <>
-      <button class="ghost" onClick={() => setOpen(true)}>Search<kbd>⌘K</kbd></button>
+      <button ref={opener} class="ghost" onClick={() => setOpen(true)} aria-haspopup="dialog">Search<kbd aria-hidden="true">⌘K</kbd></button>
       {open && (
         <div class="pal-back" onClick={() => setOpen(false)}>
-          <div class="pal" role="dialog" aria-label="Search sheets" onClick={(e) => e.stopPropagation()}>
-            <input ref={input} value={q} placeholder="Search titles and text…" onInput={(e) => setQ((e.target as HTMLInputElement).value)} onKeyDown={onInputKey} />
+          <div class="pal" role="dialog" aria-modal="true" aria-label="Search sheets" onClick={(e) => e.stopPropagation()}>
+            <input ref={input} value={q} aria-label="Search sheets" autocomplete="off" spellcheck={false} placeholder="Search titles and text…" onInput={(e) => setQ((e.target as HTMLInputElement).value)} onKeyDown={onInputKey} />
             {results.length ? (
               <ul>
                 {results.map((r, i) => (

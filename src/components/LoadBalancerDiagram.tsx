@@ -77,9 +77,9 @@ export default function LoadBalancerDiagram() {
 
   return (
     <div class="demo">
-      <h4>Load balancer in motion</h4>
+      <h3>Load balancer in motion</h3>
       <small>{current.note}</small>
-      <svg viewBox="0 0 480 200" style="width:100%;max-width:620px;display:block;margin:8px auto 0" role="img" aria-label="Diagram: a client sends requests to a load balancer, which distributes them across three servers">
+      <svg viewBox="0 0 480 200" style="width:100%;max-width:620px;display:block;margin:8px auto 0" role="group" aria-label="Diagram: a client sends requests to a load balancer, which distributes them across three servers">
         {SY.map((y, i) => (
           <line x1="230" y1="100" x2="370" y2={y} stroke={up[i] ? 'var(--muted)' : RED} stroke-width="1.5" stroke-dasharray={up[i] ? '0' : '4 4'} opacity={up[i] ? 0.6 : 0.5} />
         ))}
@@ -93,11 +93,11 @@ export default function LoadBalancerDiagram() {
         <text x="200" y="111" text-anchor="middle" font-size="11" font-weight="700" fill="var(--accent-ink)">balancer</text>
 
         {SY.map((y, i) => (
-          <g tabIndex={0} role="button" aria-pressed={!up[i]} aria-label={`Server ${i + 1}, ${up[i] ? 'healthy' : 'down'}. Activate to toggle.`} style="cursor:pointer;outline:none" onClick={() => toggle(i)} onKeyDown={(e: KeyboardEvent) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(i); } }}>
+          <g tabIndex={0} role="button" aria-pressed={!up[i]} aria-label={`Server ${i + 1}${up[i] ? '' : ' · DOWN'} ${conns[i]} open, ${up[i] ? 'healthy' : 'down'}. Activate to toggle.`} style="cursor:pointer;outline:none" onClick={() => toggle(i)} onKeyDown={(e: KeyboardEvent) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(i); } }}>
             <rect x="370" y={y - 20} width="100" height="40" rx="8" fill="var(--surface)" stroke={up[i] ? 'var(--line)' : RED} stroke-width="1.5" stroke-dasharray={up[i] ? '0' : '4 3'} />
             <rect x="378" y={y + 8} width="84" height="5" rx="2.5" fill="var(--code-bg)" />
             <rect x="378" y={y + 8} width={Math.min(84, conns[i] * 21)} height="5" rx="2.5" fill="var(--accent)" opacity={up[i] ? 1 : 0.2} />
-            <text x="378" y={y - 6} font-size="12" font-weight="600" fill={up[i] ? 'var(--ink)' : RED}>Server {i + 1}{up[i] ? '' : ' · DOWN'}</text>
+            <text x="378" y={y - 6} font-size="12" font-weight="600" fill={up[i] ? 'var(--ink)' : RED}>Server {i + 1}{up[i] ? '' : ' · DOWN'}</text>{' '}
             <text x="378" y={y + 4} font-size="9" fill="var(--muted)">{conns[i]} open</text>
           </g>
         ))}

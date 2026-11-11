@@ -47,7 +47,7 @@ const next = i >= 0 && i < flat.length - 1 ? flat[i + 1] : undefined;
     </article>
     {toc.length > 1 && (
       <aside class="toc" aria-label="On this page">
-        <h4>On this page</h4>
+        <p class="toc-h">On this page</p>
         <ul>{toc.map((h) => <li><a href={`#${h.slug}`} data-id={h.slug}>{h.text}</a></li>)}</ul>
       </aside>
     )}

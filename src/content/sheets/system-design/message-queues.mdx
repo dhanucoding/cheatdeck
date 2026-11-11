@@ -14,7 +14,7 @@ related: [system-design/rate-limiting, system-design/api-design]
 Put a durable buffer between services so the sender doesn't wait for, or crash with, the receiver.
 
 ## Queue vs log
-| | Queue (SQS, RabbitMQ) | Log/stream (Kafka, Kinesis) |
+| Aspect | Queue (SQS, RabbitMQ) | Log/stream (Kafka, Kinesis) |
 |---|---|---|
 | Message after read | Removed | Kept, consumers track an offset |
 | Replay | No | Yes |

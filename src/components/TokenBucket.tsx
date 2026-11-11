@@ -21,7 +21,7 @@ export default function TokenBucket({ capacity = 5, refillPerSec = 1 }: { capaci
 
   return (
     <div class="demo">
-      <h4>Token bucket simulator</h4>
+      <h3>Token bucket simulator</h3>
       <small>Capacity {capacity} · refills {refillPerSec}/sec</small>
       <div class="bucket"><i style={{ width: `${(tokens / capacity) * 100}%` }} /></div>
       <div class="row">
