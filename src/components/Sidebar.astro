@@ -3,23 +3,48 @@ import { catalog, url } from '../lib';
 const { current } = Astro.props;
 const cats = await catalog();
 const currentCat = cats.find((c) => c.flat.some((s) => s.id === current))?.key;
+const currentTopic = cats.flatMap((c) => c.topics).find((t) => t.items.some((s) => s.id === current))?.name;
 ---
 <aside class="sidebar" id="sidebar" aria-label="Browse sheets">
   <a class:list={['side-home', { on: !current }]} href={url('/')}>All sheets</a>
   {cats.map((c) => (
-    <details class="side-cat" open={!currentCat || c.key === currentCat}>
+    <details class="node cat" data-key={c.key} open={!currentCat || c.key === currentCat}>
       <summary><span>{c.icon} {c.label}</span><small>{c.flat.length}</small></summary>
       {c.topics.map((t) => (
-        <div class="side-topic">
-          <h4>{t.name}</h4>
+        <details class="node topic" data-key={`${c.key}/${t.name}`} open={t.name === currentTopic}>
+          <summary><span>{t.name}</span><small>{t.items.length}</small></summary>
           <ul>
             {t.items.map((s) => (
               <li><a href={url(`/sheets/${s.id}/`)} aria-current={s.id === current ? 'page' : undefined}>{s.data.title}</a></li>
             ))}
           </ul>
-        </div>
+        </details>
       ))}
     </details>
   ))}
+  <div class="tree-actions">
+    <button type="button" id="expand-all">Expand all</button>
+    <button type="button" id="collapse-all">Collapse all</button>
+  </div>
 </aside>
 <div class="scrim" id="scrim"></div>
+<script is:inline>
+  (function () {
+    var KEY = 'tree-open', nodes = [].slice.call(document.querySelectorAll('#sidebar details.node'));
+    var saved = null;
+    try { saved = JSON.parse(localStorage.getItem(KEY)); } catch (e) {}
+    if (saved) nodes.forEach(function (n) {
+      if (n.querySelector('a[aria-current]')) n.open = true;
+      else if (saved.hasOwnProperty(n.dataset.key)) n.open = saved[n.dataset.key];
+    });
+    var save = function () {
+      var o = {}; nodes.forEach(function (n) { o[n.dataset.key] = n.open; });
+      try { localStorage.setItem(KEY, JSON.stringify(o)); } catch (e) {}
+    };
+    nodes.forEach(function (n) { n.addEventListener('toggle', save); });
+    document.getElementById('expand-all').addEventListener('click', function () { nodes.forEach(function (n) { n.open = true; }); });
+    document.getElementById('collapse-all').addEventListener('click', function () {
+      nodes.forEach(function (n) { n.open = !!n.querySelector('a[aria-current]'); });
+    });
+  })();
+</script>
