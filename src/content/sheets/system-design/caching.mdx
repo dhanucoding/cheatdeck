@@ -11,6 +11,7 @@ updated: 2026-11-10
 related: [system-design/rate-limiting, system-design/load-balancing]
 ---
 import CacheAsideDiagram from "../../../components/CacheAsideDiagram.astro";
+import LruCache from "../../../components/LruCache.tsx";
 
 ## TL;DR
 Cache what is **read often, changes rarely, and is expensive to compute**. Every cache needs an invalidation plan.
@@ -30,6 +31,10 @@ Cache what is **read often, changes rarely, and is expensive to compute**. Every
 - **LRU**: drop least recently used. Best general default.
 - **LFU**: drop least frequently used. Good for stable hot sets.
 - **TTL**: expire after a fixed time. Pair with any of the above.
+
+Try LRU: request keys and watch which one gets pushed out.
+
+<LruCache client:visible capacity={4} />
 
 ## Numbers to remember
 | Operation | Rough latency |
